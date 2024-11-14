@@ -1,4 +1,4 @@
-# Build own function here ----
+# Build own functions here ----
 
 # calculate chi-squared statistic
 # Oi is observed vector, and Ei is expected proportional value
