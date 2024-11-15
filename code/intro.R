@@ -17,7 +17,7 @@ if (!is.null(dev.list())) dev.off()
 gc()
 
 
-# Basic ----
+# BASIC ----
 # ~~ Simple calculations ----
 1 + 2 #addition
 99 - 28 #subtraction
@@ -168,12 +168,15 @@ ggplot(spiral_data, aes(x = x, y = y)) +
 v1 <- c(1, 2, 3)
 v2 <- c(4, 5, 6, 7, 8)
 v3 <- c('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun') # not shown as a vector
+
 v4 <- c(1, 2, 3, 'Mon', 'Tue', 'Wed') # not shown as a vector
 v5 <- rep(1.5, 10) # repeat 1.5 ten times
 v6 <- seq(1, 10, by = 2) # sequence from 1 to 10 by 2
+
 v7 <- seq(1, 10, length = 5) # sequence from 1 to 10 with 5 elements
 v8 <- seq(1, 10, length.out = 5) # sequence from 1 to 10 with 5 elements
 v9 <- 1:100 # sequence from 1 to 100
+
 v1 <- seq(from = 1, to = 100, by = 7)
 v1[c(10, 12)] # select the 10th and 12th elements
 v1[10, 12] # NOT working
@@ -181,8 +184,10 @@ v1[10:12] # select the 10th to 12th elements
 v2 <- v1[-3] # remove the 3rd element
 v3 <- sample(100:1000, 99) # randomly select 99 numbers from 100 to 1000
 hist(v3) # plot a histogram of v3
+
 v4 <- rnorm(50, 60, 10) # generate 50 random numbers with mean 60 and standard deviation 10
 hist(v4) # plot a histogram of v4 
+
 v4 <- rnorm(999, 100, 100) # generate 50 random numbers with mean 100 and standard deviation 100
 hist(v4) # plot a histogram of the new v4
 
@@ -193,10 +198,12 @@ summary(v1) # summary of v1
 mean(v1) # mean of v1
 sum(v1) # sum of v1
 sd(v1) # standard deviation of v1
+
 min(v1) # minimum of v1
 max(v1) # maximum of v1
 range(v1) # range of v1
 quantile(v1) # quantiles of v1
+
 median(v1) # median of v1
 var(v1) # variance of v1
 sort(v1) # sort v1
@@ -222,12 +229,13 @@ head(mt1)
 
 hist(as.data.frame(mt1)$pH) # plot a histogram of pH
 
-# nagvigate the matrix
+# navigate the matrix
 mt1[39, 4]
 mt1[39, 'K']
 mt1[39, c('K', 'Ca')]
 mt1[39, c(4, 5)]
 mt1[39, ] # select the 39th row
+
 mt1[, 4] # select the 4th column
 mt1[, 'K'] # select the K column
 mt1[, c('K', 'Ca')] # select the K and Ca columns
@@ -277,7 +285,7 @@ print("Hello Geeks")
 v <- c(1, 2, 3, 4, 5)
 sum(v)
 mean(v)
-prod(v) # product
+prod(v) # product: 1*2*3*4*5
 
 # 3. Create a sequence of numbers from 200 to 1000 incrementing by 3
 seq(200, 1000, by = 3)
@@ -287,20 +295,21 @@ v <- c(51:91)
 sum(51:91)
 sum(v)
 
-# 3. Create an R Program to Take Input From the User
-# 4. How to Generate Random Numbers from Standard Distributions in R
-# 5. R Program to Sample from a Population
-# 6. Create an R Program to Find the Minimum and Maximum
-# 7. R Program to Sort a Vector
-# 8. How to Find the Factorial of a Number
-# 9. How to create R Multiplication Table
-# 10. Write an R Program to Check Prime Number
-# 11. R Program to check Armstrong Number
-# 12. R Program to Print the Fibonacci Sequence
-# 13. R Program to Check for Leap Year
-# 14. Check if a Number is Odd or Even in R Programming
+# Other exercises
+# - Create an R Program to Take Input From the User
+# - How to Generate Random Numbers from Standard Distributions in R
+# - R Program to Sample from a Population
+# - Create an R Program to Find the Minimum and Maximum
+# - R Program to Sort a Vector
+# - How to Find the Factorial of a Number
+# - How to create R Multiplication Table
+# - Write an R Program to Check Prime Number
+# - R Program to check Armstrong Number
+# - R Program to Print the Fibonacci Sequence
+# - R Program to Check for Leap Year
+# - Check if a Number is Odd or Even in R Programming
 
-# Using R ----
+# USING R ----
 # 1. Import data ----
 getwd()
 
@@ -480,7 +489,7 @@ write.csv(mm1, 'out/mm1.csv')
 # The na.omit argument ensures that any rows with missing values are omitted.  plots a histogram of the residuals to check their distribution.
 
 
-# Hacking mode getting more interesting ----
+# HACKING mode: getting more interesting ----
 # 1. Loops ----
 # for
 time <- 1:30
@@ -577,7 +586,7 @@ perc_decrease <- function(initial_val, final_val){
 perc_increase(25, 42)
 perc_decrease(42, 25)
 
-# ~~ source fun.R ----
+# ~~ Chi-squared / source fun.R ----
 # write functions in fun.R first 
 source('code/fun.R')
 
@@ -587,6 +596,8 @@ Ei_prop <- c(3, 5, 4, 5, 4)
 
 x2 <- cal_x2(Oi, Ei_prop)
 x2
+
+
 # checking using existing function in another package
 # Calculate expected probabilities
 p <- Ei_prop/sum(Ei_prop)
@@ -601,14 +612,72 @@ if (x2 == x2_t) {
   print('Please check your calculation again. No worries, it is almost there.')
 }
 
-# Exercise: add Yates' correction in the cal_x2() function. 
+
+# ***** ASSIGNMENT submit your codes by next lecture ---- 
+# Add Yates' correction in the cal_x2() function, and name the new function as cal_x2_full() (see PPT).
+# Calculate the X2 of the following data:
+# oi <- c(1503, 99)
+# ei_prop <- c(3, 1)
 
 
-# Compare the results
-identical(data2$statistic, x21)
+
+
+# ~~ Coupled equations, simulation, and plot ----
+
+# Use functions to define relationship between two species, X and Y over time
+# X_t, X_t1, Y_t, and Y_t1 (see PPT)
+# X_t1 and Y_t1 are the one-step future of X_t and Y_t, respectively
+# Define the functions for updating X and Y
+future_X <- function(X_t) {
+  X_t1 <- X_t * (4 - 3 * X_t)
+  return(X_t1)
+}
+
+future_Y <- function(Y_t, X_t) {
+  Y_t1 <- Y_t * (3.1 - 3.1 * Y_t - 0.31 * X_t)
+  return(Y_t1)
+}
+
+# Initialize vectors to store the values of X and Y
+time_steps <- 1000
+X <- numeric(time_steps)
+Y <- numeric(time_steps)
+
+# Set initial values for X and Y
+X[1] <- 0.1
+Y[1] <- 0.1
+
+# Generate the time steps
+for (t in 1:(time_steps - 1)) {
+  X[t + 1] <- future_X(X[t])
+  Y[t + 1] <- future_Y(Y[t], X[t])
+}
+
+
+# Create a data frame for plotting 
+X <- X[1:1000]
+Y <- Y[1:1000]
+time <- 1:1000
+data <- data.frame(Time = time, X = X, Y = Y) 
+
+# Plot the results using ggplot2 
+library(ggplot2)
+ggplot(data, aes(x = Time)) + 
+  geom_line(aes(y = X, color = "X")) + 
+  geom_line(aes(y = Y, color = "Y")) + 
+  geom_point(aes(y = X, color = "X"), shape = 16) + # Shape 16 for X 
+  geom_point(aes(y = Y, color = "Y"), shape = 17) + # Shape 17 for Y
+  xlim(c(501, 700))+
+  labs(y = "Values", x = "Time", color = "Legend") + 
+  theme_bw() + 
+  scale_color_manual(values = c("X" = "darkgreen", "Y" = "indianred"))
+
+
+
+
 # 3. Good manners and tricks 好习惯和小技巧 ----
 
-# format according to the subprocess 
+# format according to the subprocess (e.g, indent)
 # same policy with spaces
 # search tool
 # cmd/ctrl + shift + c <- convert all selected text to annotation and vice versa
@@ -617,30 +686,35 @@ identical(data2$statistic, x21)
 # gc() for cleaning memory
 
 # 4. Practical examples ----
+# use the npk data set in data() to test whether unknown factors, such as physical arrangement of blocks, affected the effect of the real treatments. 
+library(nlme) # use nlme package (Linear and nonlinear Mixed Effects Models)
 
-library(nlme)
-npk <- npk
-elem = colnames(npk[2:4])
-data = npk
-i = 1
-mixed_m <- function(elem,data){
+npk <- npk # load data
+elem = colnames(npk[2:4]) # get column names
+data = npk # change name, want to use data instead of npk
+i = 1 
+
+mixed_m <- function(elem, data){
   out <- data.frame() # create an empty data frame
   for(i in 1:length(elem)){
     form <- paste("lme(yield ~",elem[i],", random = ~1 | block, data = data, na.action = na.omit)") # create model expression
     m4 <-eval(parse(text = form)) # run model expression
     sum<-summary(m4) # save model summary
-    sum_mods <- data.frame(sum$tTable, sum$AIC, elem[i])# select and format ir
+    sum_mods <- data.frame(sum$tTable, sum$AIC, elem[i])# select and format
     out <- rbind(out, sum_mods) # add the results in the object "out" previously created.
-    }
-  colnames(out)[6:7] <- c('AIC', 'element') # modify some column names
+  }
+    colnames(out)[6:7] <- c('AIC', 'element') # modify some column names
   return(out) # define the output
 }
 
 treatment <-mixed_m(elem = colnames(npk[2:4]), data = npk)
+
 rownames(treatment) <- c("Control N", "N fert", "Control P", "P fert", "Control K", "K fert")
+
 treatment
 
 options(scipen = 999) # sci notation to decimal style
+
 write.csv(treatment, file = 'out/trt_example.csv')
 
 

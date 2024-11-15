@@ -1,6 +1,6 @@
 # Build own functions here ----
 
-# calculate chi-squared statistic
+# calculate chi-squared statistic using R base
 # Oi is observed vector, and Ei is expected proportional value
 
 cal_x2 <- function(Oi, Ei_prop){
