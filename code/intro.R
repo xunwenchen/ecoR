@@ -77,7 +77,7 @@ as.integer(TRUE) # the numeric value of TRUE
 as.integer(FALSE) # the numeric value of FALSE 
 
 # ~~ Characters (text) ----
-a <- wukong # it will return an error
+# a <- wukong # it will return an error
 a <- "Wukong"
 class(a)
 a <- c('Wukong', 'Bajie', 'Wujing', 'Sanzang')
@@ -119,7 +119,7 @@ grid <- expand.grid(x = a, y = b)
 # Apply the Mandelbrot function to each point
 grid$iter <- mapply(mandelbrot, grid$x, grid$y, MoreArgs = list(max_iter = 100))
 
-# Plot the Mandelbrot set
+# Plot the Mandelbrot set. It can take time.
 ggplot(grid, aes(x = x, y = y, fill = iter)) +
   geom_tile() +
   scale_fill_gradient(low = "lightblue", high = "white") +
@@ -185,7 +185,7 @@ v2 <- v1[-3] # remove the 3rd element
 v3 <- sample(100:1000, 99) # randomly select 99 numbers from 100 to 1000
 hist(v3) # plot a histogram of v3
 
-v4 <- rnorm(50, 60, 10) # generate 50 random numbers with mean 60 and standard deviation 10
+v4 <- rnorm(n = 50, mean = 60, sd = 10) # generate 50 random numbers with mean 60 and standard deviation 10
 hist(v4) # plot a histogram of v4 
 
 v4 <- rnorm(999, 100, 100) # generate 50 random numbers with mean 100 and standard deviation 100
@@ -207,6 +207,8 @@ quantile(v1) # quantiles of v1
 median(v1) # median of v1
 var(v1) # variance of v1
 sort(v1) # sort v1
+
+sort(v1, decreasing = TRUE)
 order(v1) # order of v1
 rev(v1) # reverse v1
 
@@ -330,14 +332,41 @@ library(readxl)
 
 
 # import data in excel format and take the second sheet
-df <- read_excel('data/data.xlsx', sheet = 2)
+df <- read_excel('data/data.xlsx', sheet = 2) # the data is from 10.1016/j.watres.2021.117290
 # df <- readxl::read_excel('data/data.xlsx', sheet = 2)
 # df <- read.csv('data/data.csv')
 
 # Note: data structure before importing? --> PPT slide ~33
 
+
+# 2. Data exploration and manipulation ----
 # view data
 View(df)
+
+head(df)
+head(df, 10)
+
+tail(df)
+tail(df, 10)
+
+colnames(df)
+rownames(df)
+
+df$Temperature
+hist(df$Temperature)
+
+unique(df$DO)
+length(unique(df$DO))
+
+dim(df)
+
+df[1, ]
+df[ , 4]
+df[ , 'DO']
+df[ , c('DO', 'pH')]
+df$Date
+
+hist(df$DO)
 
 
 # find something in a file, and replace
@@ -348,22 +377,26 @@ View(df)
 
 
 # add a column time_step as the first column and the values are starting from 1 to the number of rows
+
+# Data basic manipulation
+# add a column
 df <- data.frame(time_step = 1:nrow(df), df)
 
+sort(df$Rainfall)
+
+cut_off <- 100
+
+dry <- df[df$Rainfall < cut_off, ] # df[row, column]
 dim(df)
+dim(dry)
 
-View(df)
-
-unique(df$pH)
-
-colnames(df)
-
-df$Temperature
-
-hist(df$Temperature)
+hist(dry$Rainfall)
 
 summary(df)
+
+
 skimr::skim(df) # call skimr package without charing it into the Environment
+
 
 # plot line chart of df$time_step and df$Rainfall
 plot(df$Date, df$Rainfall, type = 'l', col = 'indianred', xlab = 'Time Step', ylab = 'Rainfall')
@@ -380,57 +413,106 @@ plot_rf <- ggplot(df, aes(x = time_step, y = Rainfall)) +
   # add points
   geom_point(color = 'grey', alpha = 0.5, size = 2)
 plot_rf
+
 save_plot <- TRUE
+
 if(save_plot){
   ggsave('out/rainfall.jpg', plot = plot_rf, width = 10, height = 6)
 }
+
+
 
 df_temp_op <- subset(df, df$Temperature > 25) # subset df when temp > 25
 
 hist(df_temp_op$Temperature)
 
-# 2. Data manipulation ----
-head(df)
-head(df, 10)
-tail(df)
-tail(df, 10)
 
-colnames(df)
-unique(df$DO)
-length(unique(df$DO))
-dim(df)
-df[1, ]
-df[ , 4]
-df[ , 'DO']
-df[ , c('DO', 'pH')]
-df$Date
-hist(df$DO)
+# playing with 'mite' data
+load('data/mite.RData')
 
+mite_data <- cbind(mite.xy, mite.env, mite)
 
-sort(df$Rainfall)
-cut_off <- 100
-dry <- df[df$Rainfall < cut_off, ]
-dim(dry)
-dim(df)
-hist(dry$Rainfall)
+# what species were found?
+colnames(mite); dim(mite)
+
+# species Brachysp abundance grouped by Substrate?
+colnames(mite.env)
+library(dplyr)
+mite_data %>% 
+  group_by(Substrate) %>% 
+  summarise(Brachysp.mean = mean(Brachysp), Brachysp.sd = sd(Brachysp))
+
+# exercise: water content controls species distribution?
+
+plot(mite_data$WatrCont, mite_data$Brachysp)
+plot(mite_data$WatrCont, mite_data$Oppcfmin)
+plot(mite_data$WatrCont, mite_data$Rhysardu)
+plot(mite_data$WatrCont, mite_data$Nanhcfco)
+plot(mite_data$WatrCont, mite_data$Galumsp2)
+plot(mite_data$WatrCont, mite_data$Hyporufu)
+plot(mite_data$WatrCont, mite_data$Oppcfmin)
+# ..............(-_-!)
+
+# to be efficient 
+# Get the column names of the species
+all_sp <- colnames(mite)  # Exclude the first column (WatrCont)
+
+# create an empty list to store the plots
+plot_list <- list()
+
+library(ggplot2)
+library(ggpubr)
+
+# Loop through each species column and create the plots
+for (species in all_sp) {
+  
+  
+  cor_test <- cor.test(mite_data$WatrCont, mite_data[[species]], use = "complete.obs")
+  correlation <- cor_test$estimate
+  p_value <- cor_test$p.value
+  
+  
+  print(paste("Processing species:", species)) 
+  p <- ggplot(mite_data, aes_string(x = "WatrCont", y = species)) +
+    geom_point() +
+    geom_smooth(method = "lm", col = "indianred") +
+    ggtitle(paste("Water content vs", species)) +
+    xlab("WatrCont") +
+    ylab(species)+
+    annotate("text", x = Inf, y = Inf, label = paste("R =", round(correlation, 2), "\nP =", format.pval(p_value, digits = 2)), 
+             hjust = 1.1, vjust = 1.1, size = 3, color = "blue")
+  
+  plot_list[[species]] <- p
+}
+
+# Arrange and display all plots in a grid
+library(gridExtra)
+grid.arrange(grobs = plot_list, ncol = 5)
 
 
 # create a new column with $
-data()
-npk <- npk
+# use built-in data
+data() # check what data can be used
+npk <- npk # use npk data
 
-npk$all_fert<-paste(npk$N,npk$P,npk$K,sep='_')
+head(npk)
+
+# create a new column with $
+npk$all_fert <- paste(npk$N, npk$P, npk$K, sep = '_')
+
+head(npk)
 
 # Exercise: Subset the data by N, just take the N fertilized.
-fertN<- subset(npk, npk$N == 1)
+fertN <- subset(npk, npk$N == 1)
 
 
-# paste df with vectors
-rbind(); cbind()
+# create a new column with cbind() 
 
 all_fert2 <- paste(npk$N, npk$P, npk$K, sep = '_')
+all_fert2
 
 npk_new <- cbind(npk, all_fert2)
+npk_new
 
 # order a table
 order(npk_new$yield)
@@ -440,10 +522,10 @@ sort(npk_new$yield, decreasing = TRUE)
 # 3. Create basic models and statistics ----
 
 # linear model
-m1<- lm(yield ~ N +P+K, data = npk) # apply log(N)
+m1<- lm(yield ~ N+P+K, data = npk) # apply log(N)
 m1
 
-hist(resid(m1), nclass = 10)
+hist(resid(m1), nclass = 10) # normal distribution is preferred
 summary(m1)
 
 boxplot(yield~N, data = npk)
@@ -452,41 +534,42 @@ sum <- summary(m1)
 
 sum$coefficients
 
-# generalized linear model (glm)
+# generalized linear model (glm) - not necessarily normal distribution
 m2 <- glm(yield ~ N+P+K, data = npk, family = Gamma (link = 'inverse')) # apply log(N)
 
 summary(m2)
 
 # Exercise: are there any differences in yield due to its block?
 
-m3<-lm(yield~block,data=npk)
-summary(m3)
+m3<-lm(yield ~ block, data = npk)
+summary(m3) # the answer is no. 
 
-# the answer is no. 
+# linear mixed models - Back to course PPT ~ slide 40 about experimental designs of two contexts.
 
-# linear mixed models - Back to course PPT ~ slide 37 about experimental designs of two contexts.
-
-library(nlme)
+library(nlme) # Nonlinear Mixed-Effects Models
 library(lmerTest)
 
-mm1 <- lme(yield ~ N+P+K, random = ~1 | block, data = npk, na.action = na.omit) # add na.omit
+# Linear Mixed-Effects Models:
+mm1 <- lme(yield ~ N+P+K, random = ~1 | block, data = npk, na.action = na.omit) # add na.omit; considered block as a random factor already
+# random = ~1 | block: indicates that block is a random effect, with ~1 specifying random intercepts for each block.
 
 hist(resid(mm1), nclass = 8)
 
-summary(mm1)
+summary(mm1)  # after considered block as a random factor already
 
 a <- summary(mm1)
 
 a$varFix
 
-save(mm1, 'out/mm1.R')
-
-write.csv(mm1, 'out/mm1.csv')
+# save(mm1, "out/mm1.R")
+# write.csv(mm1, "out/mm1.csv")
 
 # explanation: 
 # fits a linear mixed-effects model to the npk dataset, with yield as the response variable and N, P, and K as predictor variables. 
 # includes block as a random effect. 
-# The na.omit argument ensures that any rows with missing values are omitted.  plots a histogram of the residuals to check their distribution.
+# The na.omit argument ensures that any rows with missing values are omitted.  plots a histogram of the residuals to check their distribution. 
+
+a # check Fixed effects in the summary: The N and K had significant effects in increasing and reducing yields, respectively, after considering random effects of block. 
 
 
 # HACKING mode: getting more interesting ----
@@ -523,16 +606,19 @@ return(y)
 
 }
 
+# the square() function created can be found in the R Environment.
 square(9)
+square(12)
 
 
+# multiple arguments 
+# use of default values 
+# use of 'else if'
+center1<-function(x, fun = "mean", p = 0.5 ){
 
-# multiple arguments and default values 
-center1<-function(x, fun="mean", p=0.5 ){
-
-if(fun == "mean"){x0 <- x-mean(x)}
-else if(fun == "median"){x0 <- x-median(x)}
-else if(fun == "quantile"){x0 <- x-quantile(x, probs=p)} # meaning of p is the quantile
+if(fun == "mean"){x0 <- x - mean(x)}
+else if(fun == "median"){x0 <- x - median(x)}
+else if(fun == "quantile"){x0 <- x-quantile(x, probs = p)} # meaning of p is the quantile
 else {stop("unrecognized function name")}
 return(x0)
 
@@ -542,13 +628,17 @@ return(x0)
 y <- (1:9)^2
 mean(y)
 center1()
-center1(y)# default is mean
-center1(y, "median") # median
+center1(y)# default is mean 均值. x-mean(x) --> 1-31.667 = -30.667
+center1(y, "median") # median 中位数
 center1(y, "quantile") # default p = 0.5, return x - 50th quantile = median
 center1(y, "quantile", 0.25) # return x - 25th quantile
 center1(y, "quantile", 0.75) # return x- 75th quantile
+center1(y, "perc") # unrecognized function name
+
+
 
 # ~~ how many chicken and rabbits problem ----
+# use two arguments and list()
 
 how_many <- function(head.no, feet.no)
 {
@@ -619,6 +709,7 @@ if (x2 == x2_t) {
 # oi <- c(1503, 99)
 # ei_prop <- c(3, 1)
 
+# answer is in 'ex_ans.R'. 
 
 
 
@@ -662,14 +753,14 @@ data <- data.frame(Time = time, X = X, Y = Y)
 
 # Plot the results using ggplot2 
 library(ggplot2)
-ggplot(data, aes(x = Time)) + 
-  geom_line(aes(y = X, color = "X")) + 
-  geom_line(aes(y = Y, color = "Y")) + 
-  geom_point(aes(y = X, color = "X"), shape = 16) + # Shape 16 for X 
+ggplot(data, aes(x = Time)) +
+  geom_line(aes(y = X, color = "X")) +
+  geom_line(aes(y = Y, color = "Y")) +
+  geom_point(aes(y = X, color = "X"), shape = 16) + # Shape 16 for X
   geom_point(aes(y = Y, color = "Y"), shape = 17) + # Shape 17 for Y
   xlim(c(501, 700))+
-  labs(y = "Values", x = "Time", color = "Legend") + 
-  theme_bw() + 
+  labs(y = "Values", x = "Time", color = "Legend") +
+  theme_bw() +
   scale_color_manual(values = c("X" = "darkgreen", "Y" = "indianred"))
 
 
@@ -677,15 +768,19 @@ ggplot(data, aes(x = Time)) +
 
 # 3. Good manners and tricks 好习惯和小技巧 ----
 
-# format according to the subprocess (e.g, indent)
-# same policy with spaces
-# search tool
+# Create a project and organize files using folders 创建项目的形式，通过文件夹等管理文件
+# format according to the subprocess (e.g, indent) 利用缩进方式管理
+# same policy with spaces 统一格式
+# search tool 利用搜索工具 
 # cmd/ctrl + shift + c <- convert all selected text to annotation and vice versa
-# click on a key. It will highlight in bold the closing one
-# you hide whole section by just clicking on the arrow next to its title
-# gc() for cleaning memory
+# click on a key. It will highlight in bold the closing one 看首括号和尾括号位置
+# you hide whole section by just clicking on the arrow next to its title 按提纲隐藏代码
+# gc() for cleaning memory 清理缓存
 
-# 4. Practical examples ----
+
+
+# 4. Practical examples (self learning) ----
+# 随机事件影响的例子（# Create basic models...）的完整版本
 # use the npk data set in data() to test whether unknown factors, such as physical arrangement of blocks, affected the effect of the real treatments. 
 library(nlme) # use nlme package (Linear and nonlinear Mixed Effects Models)
 
