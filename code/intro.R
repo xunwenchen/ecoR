@@ -627,7 +627,7 @@ return(x0)
 # define a vector for testing the function
 y <- (1:9)^2
 mean(y)
-center1()
+center1() # Not working
 center1(y)# default is mean 均值. x-mean(x) --> 1-31.667 = -30.667
 center1(y, "median") # median 中位数
 center1(y, "quantile") # default p = 0.5, return x - 50th quantile = median
@@ -660,7 +660,7 @@ how_many(3, 13) # the function will return non-integers
 
 
 # ~~ percentage increase / decrease calculator ----
-# Back to course PPT ~ slide 37
+# Back to course PPT
 perc_increase <- function(initial_val, final_val){
   diff = final_val-initial_val
   change = diff/abs(initial_val)
@@ -682,7 +682,8 @@ source('code/fun.R')
 
 # data input
 Oi <- c(23, 45, 34, 56, 37)
-Ei_prop <- c(3, 5, 4, 5, 4)
+Ei_prop <- c(3, 5, 4, 5, 4) 
+# prop means proportion. For some cases, Ei is a ratio/proportion of the total number of observation. For examples in genetics, the expected ratio of genotypes is 1:2:1 for AA, Aa, and aa, respectively.
 
 x2 <- cal_x2(Oi, Ei_prop)
 x2

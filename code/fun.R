@@ -8,7 +8,7 @@ cal_x2 <- function(Oi, Ei_prop){
   # Ei is expected proportional value
   t <- sum(Oi) # total number of observation
   r <- Ei_prop/sum(Ei_prop) # ratio/probability
-  exp <- r*t # expected value
+  exp <- r*t # use proportion value to calculate real expected value
   chi_squared <- sum((Oi - exp)^2 / exp)# Calculate chi-squared statistic
   
   # Print the result
