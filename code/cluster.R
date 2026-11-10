@@ -130,7 +130,8 @@ plot(spe.ch.beta2,
 
 # 4.7.2. Using Cophenetic correlation to validate clustering ----
 # ** original distance vs clustered distance **
-# 根据共表象相关
+# 根据共表象相关，相关性高 --- 更加忠实还原样品间距离
+# 产生的树图的距离（Cophenetic距离） cor. 计算的距离（eg BC距离矩阵）
 # Single linkage clustering
 spe.ch.single.coph <- cophenetic(spe.ch.single)
 cor(spe.ch, spe.ch.single.coph)
@@ -202,14 +203,14 @@ lines(lowess(spe.ch, spe.ch.ward.coph), col = "red")
 dev.off()
 
 # use Gower method to judge which clustering is better 
-# Gower (1983) distance. The smallest the best
+# Gower (1983) distance. *The smallest the best
 (gow.dist.single <- sum((spe.ch - spe.ch.single.coph) ^ 2))
 (gow.dist.comp <- sum((spe.ch - spe.ch.comp.coph) ^ 2))
 (gow.dist.UPGMA <- sum((spe.ch - spe.ch.UPGMA.coph) ^ 2))
 (gow.dist.ward <- sum((spe.ch - spe.ch.ward.coph) ^ 2))
 
 
-# 4.7.3.1. Fusion level ----
+# 4.7.3.1. Fusion level to find how many clusters ----
 
 par(mfrow = c(2, 2))
 # Plot the fusion level values of the complete linkage clustering
@@ -280,6 +281,7 @@ col = "red",
 cex = 0.8)
 
 dev.off()
+# When read from right to left, long horizontal lines *preceding* steep increases suggest cutting levels, e.g. the 9-group solution in the complete linkage dendrogram or the 4-group solution in the Ward dendrogram
 
 # 4.7.3.2. Comparing two dendrograms ----
 # Objects of class "hclust" must be first converted into objects of 

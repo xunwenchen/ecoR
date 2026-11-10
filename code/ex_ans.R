@@ -5,7 +5,7 @@ cal_x2_full <- function(Oi, Ei_prop){
   
   # only do correction when df = 1
   k = length(Oi)# obtain number of observation
-  df = k - 1 # calculate degree of freedom
+  df = k - 1 # calculate degree of freedom. df = k - 1 - a. But, ignore a when expected probabilities are fixed and known, like AA, Aa, aa = 1:2:1
   if(df >= 2){
     
   # use the original equation

@@ -231,6 +231,8 @@ head(mt1)
 
 hist(as.data.frame(mt1)$pH) # plot a histogram of pH
 
+# ========上课次到这里=============================
+
 # navigate the matrix
 mt1[39, 4]
 mt1[39, 'K']
@@ -438,8 +440,8 @@ colnames(mite); dim(mite)
 # species Brachysp abundance grouped by Substrate?
 colnames(mite.env)
 library(dplyr)
-mite_data %>% 
-  group_by(Substrate) %>% 
+mite_data  |> 
+  group_by(Substrate) |> 
   summarise(Brachysp.mean = mean(Brachysp), Brachysp.sd = sd(Brachysp))
 
 # exercise: water content controls species distribution?
@@ -483,12 +485,26 @@ for (species in all_sp) {
              hjust = 1.1, vjust = 1.1, size = 3, color = "blue")
   
   plot_list[[species]] <- p
+  
 }
 
 # Arrange and display all plots in a grid
 library(gridExtra)
 grid.arrange(grobs = plot_list, ncol = 5)
 
+
+# Find only significant correlations 
+for (species in all_sp) {
+  cor_test <- cor.test(mite_data$WatrCont, mite_data[[species]], use = "complete.obs")
+  correlation <- cor_test$estimate
+  p_value <- cor_test$p.value
+  if(p_value < 0.05 & abs(correlation) > 0.6){
+    print(paste("Significant correlation found for species:", species))
+  }
+}
+
+# Find the plot of Tectvela
+plot_list[["Tectvela"]]
 
 # create a new column with $
 # use built-in data
@@ -521,45 +537,74 @@ sort(npk_new$yield, decreasing = TRUE)
 
 # 3. Create basic models and statistics ----
 
-# linear model
+# linear model. Using N, P, and K to predict yield.
 m1<- lm(yield ~ N+P+K, data = npk) # apply log(N)
 m1
 
 hist(resid(m1), nclass = 10) # normal distribution is preferred
-summary(m1)
+# residue is the difference between the observed value and the predicted value.
+
+# plot prediction line with actual data:
+npk$predicted_yield <- predict(m1)
+plot(npk$predicted_yield, npk$yield,
+     main = "Actual vs. Predicted Yield",
+     xlab = "Predicted Yield",
+     ylab = "Actual Yield",
+     pch = 19, col = "blue")
+abline(a = 0, b = 1, col = "red", lwd = 2, lty = 2)
 
 boxplot(yield~N, data = npk)
+boxplot(yield~P, data = npk)
+boxplot(yield~K, data = npk)
 
 sum <- summary(m1)
 
 sum$coefficients
 
 # generalized linear model (glm) - not necessarily normal distribution
-m2 <- glm(yield ~ N+P+K, data = npk, family = Gamma (link = 'inverse')) # apply log(N)
+m2 <- glm(yield ~ N+P+K, data = npk) # apply log(N)
 
 summary(m2)
+hist(m2$residuals, nclass = 10) # normal distribution is preferred
+
+npk$predicted_yield2 <- predict(m2)
+plot(npk$predicted_yield2, npk$yield,
+     main = "Actual vs. Predicted Yield",
+     xlab = "Predicted Yield",
+     ylab = "Actual Yield",
+     pch = 19, col = "blue")
+abline(a = 0, b = 1, col = "red", lwd = 2, lty = 2)
 
 # Exercise: are there any differences in yield due to its block?
 
 m3<-lm(yield ~ block, data = npk)
 summary(m3) # the answer is no. 
 
-# linear mixed models - Back to course PPT ~ slide 40 about experimental designs of two contexts.
+# linear mixed models - Back to course PPT about experimental designs of two contexts.
 
 library(nlme) # Nonlinear Mixed-Effects Models
 library(lmerTest)
 
 # Linear Mixed-Effects Models:
+# Mixed-Effects Models - they contain both fixed parts and random parts.
 mm1 <- lme(yield ~ N+P+K, random = ~1 | block, data = npk, na.action = na.omit) # add na.omit; considered block as a random factor already
 # random = ~1 | block: indicates that block is a random effect, with ~1 specifying random intercepts for each block.
 
 hist(resid(mm1), nclass = 8)
 
+npk$predicted_yield3 <- predict(mm1)
+plot(npk$predicted_yield3, npk$yield,
+     main = "Actual vs. Predicted Yield",
+     xlab = "Predicted Yield",
+     ylab = "Actual Yield",
+     pch = 19, col = "blue")
+abline(a = 0, b = 1, col = "red", lwd = 2, lty = 2)
+
 summary(mm1)  # after considered block as a random factor already
 
 a <- summary(mm1)
 
-a$varFix
+a$varFix # checking independence of estimates. Values near 0 mean yes
 
 # save(mm1, "out/mm1.R")
 # write.csv(mm1, "out/mm1.csv")

@@ -375,7 +375,8 @@ summary(dca_result) # DCA1, Axis length = 0.71978
 
 
 
-# ~ CCA ( Canonical Correspondence Analysis) ----
+# ~ CCA (Canonical Correspondence Analysis) ----
 
 
 # ~ LDA (Linear Discriminant Analysis) ----
+
